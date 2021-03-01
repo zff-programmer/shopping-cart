@@ -16,7 +16,7 @@
         <li class="food-item"
             v-for="item in foods.filter(food=>food.foodType===foodType)"
             :key="item.foodID">
-          <img src="//blog.qszone.com/img/author.6f6bee9b.jpg"
+          <img src="@/assets/image/food.jpg"
                alt />
           <div class="food-info">
             <div class="food-name">{{item.foodName}}</div>
@@ -48,7 +48,7 @@
         <li class="food-item"
             v-for="item in foods.filter(food=>food.count > 0)"
             :key="item.foodID">
-          <img src="//blog.qszone.com/img/author.6f6bee9b.jpg"
+          <img src="@/assets/image/food.jpg"
                alt />
           <div class="food-info">
             <div class="food-name">{{item.foodName}}</div>
