@@ -259,7 +259,7 @@ export default {
       if (count === 0) {
         this.$store.commit('removeFoods', index - 1)
       } else {
-        this.$$store.commit('changeFoods', {
+        this.$store.commit('changeFoods', {
           foodID: this.foods[index - 1].foodID,
           count,
         })
