@@ -12,7 +12,8 @@
       </div>
       <!-- 菜单列表结束 -->
       <!-- 食物列表开始 -->
-      <ul class="food-list">
+      <ul class="food-list"
+          id="test">
         <li class="food-item"
             v-for="item in foods.filter(food=>food.foodType===foodType)"
             :key="item.foodID">
@@ -26,10 +27,11 @@
                 <button @click="decrement(item.foodID)"
                         v-show="item.count > 0">-</button>
                 <span v-show="item.count > 0">{{item.count}}</span>
-                <button @click="increment(item.foodID)">+</button>
+                <button @click="increment($event,item.foodID)">+</button>
               </div>
             </div>
           </div>
+          <!-- <div class="flyElement"></div> -->
         </li>
       </ul>
     </div>
@@ -45,6 +47,8 @@
       <!-- 弹出框开始 -->
       <div class="pop-up-box"
            v-show="visible && totalPrice">
+        <div class="clearAll"
+             @click="clearAll">清空购物车</div>
         <li class="food-item"
             v-for="item in foods.filter(food=>food.count > 0)"
             :key="item.foodID">
@@ -57,7 +61,8 @@
               <div class="food-count">
                 <button @click="decrement(item.foodID)">-</button>
                 {{item.count}}
-                <button @click="increment(item.foodID)">+</button>
+                <button @click="increment($event,item.foodID)"
+                        class="btn-increment">+</button>
               </div>
             </div>
           </div>
@@ -67,7 +72,8 @@
       <div class="footer"
            @click="changeVisiblity">
         <span class="footer-total">总计：￥{{totalPrice}}</span>
-        <span class="footer-cal">结算</span>
+        <span class="footer-cal"
+              @click.stop="">结算</span>
       </div>
     </footer>
     <!-- 尾部结束 -->
@@ -204,9 +210,40 @@ export default {
     }
   },
   methods: {
-    increment (index) {
+    increment (e, index) {
+      //加入购物车特效
+      var eleFlyElement = document.createElement("div")
+      var eleShopCart = document.querySelector(".footer-total")
+      var scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft || 0,
+        scrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
+      //设置元素的大小
+      eleFlyElement.style.width = '14px'
+      eleFlyElement.style.height = '14px'
+      eleFlyElement.style.backgroundColor = 'red'
+      eleFlyElement.style.left = e.clientX + scrollLeft - 20 + 'px'
+      eleFlyElement.style.top = e.clientY + scrollTop + 'px'
+      eleFlyElement.style.borderRadius = '50%'
+      eleFlyElement.style.zIndex = 999
+      eleFlyElement.style.position = 'absolute'
+      document.body.append(eleFlyElement)
+
+      var myParabola = funParabola(eleFlyElement, eleShopCart, {
+        speed: 100,
+        curvature: 0.005,
+        complete: function () {
+          eleFlyElement.remove()
+        }
+      });
+      if (eleFlyElement && eleShopCart) {
+        // 需要重定位
+        myParabola.position().move();
+      }
+
+
+      //改变数量
       this.foods[index - 1].count++
       const count = this.foods[index - 1].count
+      //保存至Vuex
       if (count === 1) {
         this.$store.commit('addFoods', this.foods[index - 1])
       } else {
@@ -236,6 +273,11 @@ export default {
       if (this.totalPrice <= 0) return
       this.visible = !this.visible
     },
+    clearAll () {
+      for (const item of this.foods) {
+        item.count = 0
+      }
+    }
   },
   computed: {
     totalPrice () {
@@ -253,6 +295,8 @@ export default {
   },
 }
 </script>
+
+
 
 <style lang="scss" scoped>
 .food-container {
@@ -338,6 +382,17 @@ export default {
   bottom: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.7);
+}
+
+.clearAll {
+  height: 30px;
+  padding: 5px 10px 0 0;
+  text-align: right;
+  font-size: 12px;
+  color: #ccc;
+}
+.clearAll:active {
+  color: #000;
 }
 .footer {
   display: flex;
